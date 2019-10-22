@@ -257,3 +257,42 @@
         size_hint: 0.1,0.1
         color: 0,0,1,1
         on_press: root.fancy_thread()
+
+    Slider:
+        id: rampSpeedSlider
+        min: 0.0
+        max: 10.0
+        pos_hint: {"x":.07 , "top":.37}
+        size_hint: 0.2, 0.1
+        step: 1
+        # on_touch_up: root.slider2()
+
+    Label:
+        text: "Stepper Speed= " + str(rampSpeedSlider.value)
+        background_color: (0, 0, 0, 1.0)
+        font_name: 'Roboto-Bold'
+        text_size: self.size
+        outline_width: 5
+        outline_color: (1,1,1,1)
+        halign: 'center'
+        valign: 'middle'
+        font_size: 40
+        pos_hint: {"x":.07, "top":.5}
+        size_hint: 0.2,0.2
+        color: 0,0,1,1
+    Button:
+        id: rampMotor
+        text: "Start Ramp"
+        size: 100, 100
+        background_color: (0, 0, 0, 1.0)
+        font_name: 'Roboto-Bold'
+        text_size: self.size
+        outline_width: 5
+        outline_color: (1,1,1,1)
+        halign: 'center'
+        valign: 'middle'
+        font_size: 35
+        pos_hint: {"x":.3, "top":.43}
+        size_hint: 0.13,0.13
+        color: 0,0,1,1
+        on_press: root.move_ramp()

@@ -264,11 +264,22 @@ class MainScreen(Screen):
         print("thread stopped")
 
     def move_ramp(self):
-        s0.set_speed(1)
+        global flip
+        flip = not flip
 
         if (cyprus.read_gpio() & 0b0010):  # binary bitwise AND of the value returned from read.gpio()
             print("GPIO on port P7 is HIGH")
-            s0.start_relative_move(15)
+            s0.set_speed(self.speedSlider.value)
+            print(self.speedSlider.value)
+            if s0.is_busy():
+                print("motor busy")
+                s0.softStop()
+
+            else:
+                s0.start_relative_move(20)
+                print("motor not busy")
+
+
 
 
     def start_staircase(self):
