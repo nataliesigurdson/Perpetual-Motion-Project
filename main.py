@@ -12,10 +12,12 @@ from kivy.uix.slider import Slider
 from kivy.animation import Animation, AnimationTransition
 from threading import Thread
 from pidev.Joystick import Joystick
-from time import sleep
+
 import RPi.GPIO as GPIO
 from pidev.stepper import stepper
 import time
+from time import sleep
+from pidev.Cyprus_Commands import Cyprus_Commands_RPi as cyprus
 
 
 from pidev.MixPanel import MixPanel
@@ -261,7 +263,23 @@ class MainScreen(Screen):
 
         print("thread stopped")
 
+    def move_ramp(self):
+        s0.set_speed(1)
 
+        if (cyprus.read_gpio() & 0b0010):  # binary bitwise AND of the value returned from read.gpio()
+            print("GPIO on port P7 is HIGH")
+            s0.start_relative_move(15)
+
+
+    def start_staircase(self):
+        if (cyprus.read_gpio() & 0b0001):  # binary bitwise AND of the value returned from read.gpio()
+            print("GPIO on port P6 is HIGH")
+            cyprus.set_pwm_values(2, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+
+    def open_gate(self):
+        cyprus.initialize()
+        cyprus.setup_servo(2)
+        cyprus.set_servo_position(1, .5)
 
 
 class TransitionScreen(Screen):
