@@ -98,11 +98,30 @@ class MainScreen(Screen):
     def toggleGate(self):
         print("Open and Close gate here")
 
+        self.openGate()
+
+
+    def openGate(self):
+        if OPEN:
+            cyprus.initialize()
+            cyprus.setup_servo(2)
+            cyprus.set_servo_position(2, .5)
+        if CLOSE:
+            cyprus.initialize()
+            cyprus.setup_servo(2)
+            cyprus.set_servo_position(2, .5)
+
+
+
     def toggleStaircase(self):
         print("Turn on and off staircase here")
 
+   # def turnOnStaircase(self):
+
     def toggleRamp(self):
         print("Move ramp up and down here")
+
+   # def moveRamp(self):
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
