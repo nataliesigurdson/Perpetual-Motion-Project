@@ -116,8 +116,16 @@ class MainScreen(Screen):
     def toggleStaircase(self):
         print("Turn on and off staircase here")
 
-   # def turnOnStaircase(self):
+        self.turnOnStaircase()
 
+    def turnOnStaircase(self):
+        if ON:
+            cyprus.initialize()
+            cyprus.setup_servo(1)
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+        if OFF:
+            cyprus.initialize()
+            cyprus.setup_servo(1)
     def toggleRamp(self):
         print("Move ramp up and down here")
 
