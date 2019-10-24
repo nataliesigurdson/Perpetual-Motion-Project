@@ -126,14 +126,25 @@ class MainScreen(Screen):
         if OFF:
             cyprus.initialize()
             cyprus.setup_servo(1)
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
     def toggleRamp(self):
         print("Move ramp up and down here")
+        self.moveRamp()
+    def moveRamp(self):
+        if HOME:
 
-   # def moveRamp(self):
-
+            s0 = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
+                         steps_per_unit=200, speed=1)
+            s0.get_position_in_units()
+            s0.set_as_home()
+            s0.start_relative_move(-20)
+        if TOP:
+            s0.goHome()
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-
+        self.moveRamp()
+        self.turnOnStaircase()
+        self.openGate()
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
 
