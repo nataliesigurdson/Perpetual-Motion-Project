@@ -47,7 +47,8 @@ BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
 INIT_RAMP_SPEED = 150
 RAMP_LENGTH = 725
-
+s0 = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
+                         steps_per_unit=200, speed=1)
 
 # ////////////////////////////////////////////////////////////////
 # //            DECLARE APP CLASS AND SCREENMANAGER             //
@@ -116,16 +117,44 @@ class MainScreen(Screen):
     def toggleStaircase(self):
         print("Turn on and off staircase here")
 
-   # def turnOnStaircase(self):
+        self.turnOnStaircase()
 
+    def turnOnStaircase(self):
+        if ON:
+            cyprus.initialize()
+            cyprus.setup_servo(1)
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+        if OFF:
+            cyprus.initialize()
+            cyprus.setup_servo(1)
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
     def toggleRamp(self):
         print("Move ramp up and down here")
+        self.moveRamp()
+    def moveRamp(self):
+        s0.get_position_in_units()
+        s0.set_speed(1)
+        global HOME
 
-   # def moveRamp(self):
+        #global TOP
+        if HOME:
+            s0.get_position_in_units()
+            s0.set_as_home()
+            print("moving")
+            s0.start_relative_move(-53)
+            print("at top")
+
+            HOME = False
+            #TOP = True
+        else:
+            s0.goHome()
+            print("at home")
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-
+        self.toggleRamp()
+        self.toggleStaircase()
+        self.toggleGate()
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
 
