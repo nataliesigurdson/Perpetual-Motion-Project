@@ -124,11 +124,12 @@ class MainScreen(Screen):
             cyprus.initialize()
             cyprus.setup_servo(1)
             cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-            ON= True
+            ON= False
         if OFF:
             cyprus.initialize()
             cyprus.setup_servo(1)
             cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            ON = True
     def toggleRamp(self):
         print("Move ramp up and down here")
         self.moveRamp()
@@ -153,6 +154,9 @@ class MainScreen(Screen):
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
+        # NATALIE! I talked to harlow and he says we need to use the switch on the ramp to determine the home position,
+        # aka set home when switch is pressed. something with the function: go_until_press(self, dir: int, speed: int)
+        # didn't figure it out yet though
         self.toggleRamp()
         self.toggleStaircase()
         self.toggleGate()
