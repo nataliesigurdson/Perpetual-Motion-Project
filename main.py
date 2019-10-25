@@ -141,7 +141,7 @@ class MainScreen(Screen):
             s0.get_position_in_units()
             s0.set_as_home()
             print("moving")
-            s0.start_relative_move(-53)
+            s0.start_relative_move(-57)
             print("at top")
 
             HOME = False
