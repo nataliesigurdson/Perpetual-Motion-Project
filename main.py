@@ -31,6 +31,7 @@ from time import sleep
 import RPi.GPIO as GPIO
 from pidev.stepper import stepper
 from pidev.Cyprus_Commands import Cyprus_Commands_RPi as cyprus
+from kivy.properties import ObjectProperty
 
 # ////////////////////////////////////////////////////////////////
 # //                      GLOBAL VARIABLES                      //
@@ -45,10 +46,10 @@ CLOSE = True
 YELLOW = .180, 0.188, 0.980, 1
 BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 150
+INIT_RAMP_SPEED = 10
 RAMP_LENGTH = 725
-s0 = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
-                         steps_per_unit=200, speed=1)
+
+
 
 # ////////////////////////////////////////////////////////////////
 # //            DECLARE APP CLASS AND SCREENMANAGER             //
@@ -69,7 +70,8 @@ cyprus.open_spi()
 # //                    SLUSH/HARDWARE SETUP                    //
 # ////////////////////////////////////////////////////////////////
 sm = ScreenManager()
-ramp = stepper(port=0, speed=INIT_RAMP_SPEED)
+ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
+             steps_per_unit=25, speed=INIT_RAMP_SPEED)
 
 
 # ////////////////////////////////////////////////////////////////
@@ -92,6 +94,8 @@ class MainScreen(Screen):
     rampSpeed = INIT_RAMP_SPEED
     staircaseSpeed = 40
 
+    staircase = ObjectProperty(None)
+
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.initialize()
@@ -103,14 +107,15 @@ class MainScreen(Screen):
 
 
     def openGate(self):
-        if OPEN:
-            cyprus.initialize()
-            cyprus.setup_servo(2)
-            cyprus.set_servo_position(2, .5)
+        global CLOSE
+        cyprus.initialize()
+        cyprus.setup_servo(2)
         if CLOSE:
-            cyprus.initialize()
-            cyprus.setup_servo(2)
-            cyprus.set_servo_position(2, .5)
+            cyprus.set_servo_position(2, 0.5)
+            CLOSE = False
+        else:
+            cyprus.set_servo_position(2, 0)
+            CLOSE = True
 
 
 
@@ -120,36 +125,39 @@ class MainScreen(Screen):
         self.turnOnStaircase()
 
     def turnOnStaircase(self):
-        if ON:
-            cyprus.initialize()
-            cyprus.setup_servo(1)
-            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-            ON= False
+        global OFF
+        cyprus.initialize()
+        cyprus.setup_servo(1)
         if OFF:
-            cyprus.initialize()
-            cyprus.setup_servo(1)
             cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-            ON = True
+            print("staircase moving")
+            OFF = False
+        else:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            print("staircase stopped")
+            self.staircase.text = "Staircase Off"
+            OFF = True
     def toggleRamp(self):
         print("Move ramp up and down here")
         self.moveRamp()
     def moveRamp(self):
-        s0.get_position_in_units()
-        s0.set_speed(1)
+        ramp.get_position_in_units()
+        global INIT_RAMP_SPEED
         global HOME
 
         #global TOP
         if HOME:
-            s0.get_position_in_units()
-            s0.set_as_home()
-            print("moving")
-            s0.start_relative_move(-57)
+            ramp.get_position_in_units()
+            ramp.set_as_home()
+            print(" ramp moving")
+            ramp.start_relative_move(-57)
             print("at top")
 
             HOME = False
             #TOP = True
         else:
-            s0.goHome()
+            ramp.go_until_press(1, 1)
+            ramp.goHome()
             print("at home")
 
     def auto(self):
