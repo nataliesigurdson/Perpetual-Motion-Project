@@ -124,6 +124,7 @@ class MainScreen(Screen):
             cyprus.initialize()
             cyprus.setup_servo(1)
             cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            ON= True
         if OFF:
             cyprus.initialize()
             cyprus.setup_servo(1)
