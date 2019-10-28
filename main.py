@@ -150,14 +150,14 @@ class MainScreen(Screen):
             ramp.get_position_in_units()
             ramp.set_as_home()
             print(" ramp moving")
-            ramp.start_relative_move(-57)
+            ramp.start_relative_move(-228)
             print("at top")
 
             HOME = False
             #TOP = True
         else:
             ramp.go_until_press(1, 1)
-            ramp.goHome()
+            #ramp.goHome()
             print("at home")
 
     def auto(self):
