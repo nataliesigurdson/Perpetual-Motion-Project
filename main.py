@@ -104,6 +104,7 @@ class MainScreen(Screen):
     staircaseSpeed = 40
 
     staircase = ObjectProperty(None)
+    rampSpeed = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
@@ -169,9 +170,12 @@ class MainScreen(Screen):
         self.toggleRamp()
         self.toggleStaircase()
         self.toggleGate()
+
     def setRampSpeed(self, speed):
+
         print("Set the ramp speed and update slider text")
         ramp.set_speed(self.rampSpeed.value)
+
     def setStaircaseSpeed(self, speed):
         print("Set the staircase speed and update slider text")
 
