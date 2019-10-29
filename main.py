@@ -72,6 +72,15 @@ cyprus.open_spi()
 sm = ScreenManager()
 ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
              steps_per_unit=25, speed=INIT_RAMP_SPEED)
+ramp.go_until_press(0, 10000)
+ramp.set_as_home()
+
+cyprus.initialize()
+cyprus.setup_servo(2)
+cyprus.set_servo_position(2, 0)
+
+cyprus.setup_servo(1)
+cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
 
 
 # ////////////////////////////////////////////////////////////////
@@ -108,12 +117,11 @@ class MainScreen(Screen):
 
     def openGate(self):
         global CLOSE
-        cyprus.initialize()
-        cyprus.setup_servo(2)
+
         if CLOSE:
             cyprus.set_servo_position(2, 0.5)
             CLOSE = False
-        else:dp
+        else:
             cyprus.set_servo_position(2, 0)
             CLOSE = True
 
@@ -126,8 +134,7 @@ class MainScreen(Screen):
 
     def turnOnStaircase(self):
         global OFF
-        cyprus.initialize()
-        cyprus.setup_servo(1)
+
         if OFF:
             cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
             print("staircase moving")
@@ -135,20 +142,15 @@ class MainScreen(Screen):
         else:
             cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
             print("staircase stopped")
-            self.staircase.text = "Staircase Off"
+            # self.staircase.text = "Staircase Off"
             OFF = True
     def toggleRamp(self):
         print("Move ramp up and down here")
         self.moveRamp()
     def moveRamp(self):
-        ramp.get_position_in_units()
-        global INIT_RAMP_SPEED
         global HOME
-
         #global TOP
         if HOME:
-            ramp.get_position_in_units()
-            ramp.set_as_home()
             print(" ramp moving")
             ramp.start_relative_move(-228)
             print("at top")
@@ -156,8 +158,7 @@ class MainScreen(Screen):
             HOME = False
             #TOP = True
         else:
-            ramp.go_until_press(1, 1)
-            #ramp.goHome()
+            ramp.goHome()
             print("at home")
 
     def auto(self):
@@ -170,7 +171,7 @@ class MainScreen(Screen):
         self.toggleGate()
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
-
+        ramp.set_speed(self.rampSpeed.value)
     def setStaircaseSpeed(self, speed):
         print("Set the staircase speed and update slider text")
 
