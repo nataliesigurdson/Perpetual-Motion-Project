@@ -46,7 +46,7 @@ CLOSE = True
 YELLOW = .180, 0.188, 0.980, 1
 BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 10
+INIT_RAMP_SPEED = 30
 RAMP_LENGTH = 725
 
 
@@ -71,7 +71,7 @@ cyprus.open_spi()
 # ////////////////////////////////////////////////////////////////
 sm = ScreenManager()
 ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
-             steps_per_unit=25, speed=INIT_RAMP_SPEED)
+               steps_per_unit=25, speed=INIT_RAMP_SPEED)
 ramp.go_until_press(0, 10000)
 ramp.set_as_home()
 
