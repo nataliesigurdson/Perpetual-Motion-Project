@@ -31,7 +31,6 @@ from time import sleep
 import RPi.GPIO as GPIO
 from pidev.stepper import stepper
 from pidev.Cyprus_Commands import Cyprus_Commands_RPi as cyprus
-from kivy.properties import ObjectProperty
 
 # ////////////////////////////////////////////////////////////////
 # //                      GLOBAL VARIABLES                      //
@@ -46,9 +45,8 @@ CLOSE = True
 YELLOW = .180, 0.188, 0.980, 1
 BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 10
+INIT_RAMP_SPEED = 150
 RAMP_LENGTH = 725
-
 
 
 # ////////////////////////////////////////////////////////////////
@@ -70,8 +68,7 @@ cyprus.open_spi()
 # //                    SLUSH/HARDWARE SETUP                    //
 # ////////////////////////////////////////////////////////////////
 sm = ScreenManager()
-ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
-             steps_per_unit=25, speed=INIT_RAMP_SPEED)
+ramp = stepper(port=0, speed=INIT_RAMP_SPEED)
 
 
 # ////////////////////////////////////////////////////////////////
@@ -94,8 +91,6 @@ class MainScreen(Screen):
     rampSpeed = INIT_RAMP_SPEED
     staircaseSpeed = 40
 
-    staircase = ObjectProperty(None)
-
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.initialize()
@@ -103,71 +98,15 @@ class MainScreen(Screen):
     def toggleGate(self):
         print("Open and Close gate here")
 
-        self.openGate()
-
-
-    def openGate(self):
-        global CLOSE
-        cyprus.initialize()
-        cyprus.setup_servo(2)
-        if CLOSE:
-            cyprus.set_servo_position(2, 0.5)
-            CLOSE = False
-        else:dp
-            cyprus.set_servo_position(2, 0)
-            CLOSE = True
-
-
-
     def toggleStaircase(self):
         print("Turn on and off staircase here")
 
-        self.turnOnStaircase()
-
-    def turnOnStaircase(self):
-        global OFF
-        cyprus.initialize()
-        cyprus.setup_servo(1)
-        if OFF:
-            cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-            print("staircase moving")
-            OFF = False
-        else:
-            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-            print("staircase stopped")
-            self.staircase.text = "Staircase Off"
-            OFF = True
     def toggleRamp(self):
         print("Move ramp up and down here")
-        self.moveRamp()
-    def moveRamp(self):
-        ramp.get_position_in_units()
-        global INIT_RAMP_SPEED
-        global HOME
-
-        #global TOP
-        if HOME:
-            ramp.get_position_in_units()
-            ramp.set_as_home()
-            print(" ramp moving")
-            ramp.start_relative_move(-228)
-            print("at top")
-
-            HOME = False
-            #TOP = True
-        else:
-            ramp.go_until_press(1, 1)
-            #ramp.goHome()
-            print("at home")
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-        # NATALIE! I talked to harlow and he says we need to use the switch on the ramp to determine the home position,
-        # aka set home when switch is pressed. something with the function: go_until_press(self, dir: int, speed: int)
-        # didn't figure it out yet though
-        self.toggleRamp()
-        self.toggleStaircase()
-        self.toggleGate()
+
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
 
