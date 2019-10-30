@@ -48,7 +48,7 @@ BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
 INIT_RAMP_SPEED = 30
 RAMP_LENGTH = 725
-
+STAIRCASE_SPEED = 50000
 
 
 # ////////////////////////////////////////////////////////////////
@@ -105,6 +105,7 @@ class MainScreen(Screen):
 
     staircase = ObjectProperty(None)
     rampSpeed = ObjectProperty(None)
+    staircaseSpeed = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
@@ -135,9 +136,10 @@ class MainScreen(Screen):
 
     def turnOnStaircase(self):
         global OFF
+        global STAIRCASE_SPEED
 
         if OFF:
-            cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=STAIRCASE_SPEED, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
             print("staircase moving")
             OFF = False
         else:
@@ -159,14 +161,12 @@ class MainScreen(Screen):
             HOME = False
             #TOP = True
         else:
-            ramp.goHome()
+            ramp.start_relative_move(228)
+            #ramp.goHome()
             print("at home")
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-        # NATALIE! I talked to harlow and he says we need to use the switch on the ramp to determine the home position,
-        # aka set home when switch is pressed. something with the function: go_until_press(self, dir: int, speed: int)
-        # didn't figure it out yet though
         self.toggleRamp()
         self.toggleStaircase()
         self.toggleGate()
@@ -177,7 +177,10 @@ class MainScreen(Screen):
         ramp.set_speed(self.rampSpeed.value)
 
     def setStaircaseSpeed(self, speed):
+        global STAIRCASE_SPEED
         print("Set the staircase speed and update slider text")
+        STAIRCASE_SPEED = self.staircaseSpeed.value
+        cyprus.set_motor_speed(4, self.staircaseSpeed.value)
 
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
