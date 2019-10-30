@@ -46,7 +46,7 @@ CLOSE = True
 YELLOW = .180, 0.188, 0.980, 1
 BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 40
+INIT_RAMP_SPEED = 50
 RAMP_LENGTH = 725
 STAIRCASE_SPEED = 50000
 
@@ -139,9 +139,15 @@ class MainScreen(Screen):
         global STAIRCASE_SPEED
 
         if OFF:
-            cyprus.set_pwm_values(1, period_value=100000, compare_value=STAIRCASE_SPEED, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-            print("staircase moving")
-            OFF = False
+            while True:
+                if ((cyprus.read_gpio() & 0b0001) == 0):
+                    print("GPIO on port P6 is LOW")
+                    print(" ramp moving")
+                    cyprus.set_pwm_values(1, period_value=100000, compare_value=STAIRCASE_SPEED, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+                    print("staircase moving")
+                    time.sleep(5)
+                    OFF = False
+                    break
         else:
             cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
             print("staircase stopped")
@@ -164,12 +170,12 @@ class MainScreen(Screen):
         if ((cyprus.read_gpio() & 0b0010)==0):
             print("GPIO on port P7 is LOW")
             print(" ramp moving")
-            ramp.relative_move(-226)
-            #print("at top")
 
-        if ((cyprus.read_gpio() & 0b0001)==0):
-            print("GPIO on port P6 is LOW")
+            ramp.start_relative_move(-226)
+            #print("at top")
+            self.turnOnStaircase()
             ramp.relative_move(226)
+
             print("at home")
 
     def auto(self):
