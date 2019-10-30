@@ -46,7 +46,7 @@ CLOSE = True
 YELLOW = .180, 0.188, 0.980, 1
 BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 50
+INIT_RAMP_SPEED = 40
 RAMP_LENGTH = 725
 STAIRCASE_SPEED = 50000
 
@@ -180,9 +180,36 @@ class MainScreen(Screen):
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-        self.toggleRamp()
-        self.toggleStaircase()
-        self.toggleGate()
+        #self.toggleRamp()
+        #self.toggleStaircase()
+        #self.toggleGate()
+        global HOME
+        # global TOP
+        ramp.set_speed(40)
+        if ((cyprus.read_gpio() & 0b0010) == 0):
+
+            print("GPIO on port P7 is LOW")
+            print(" ramp moving")
+
+            ramp.start_relative_move(-226)
+            # print("at top")
+
+            while True:
+                if ((cyprus.read_gpio() & 0b0001) == 0):
+                    print("GPIO on port P6 is LOW")
+                    cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+                    print("staircase moving")
+
+                    break
+
+            ramp.start_relative_move(226)
+            print("going home")
+            time.sleep(8)
+            print("turning ramp off")
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+
+            cyprus.set_servo_position(2, 0.5)
+
 
     def setRampSpeed(self, speed):
 
