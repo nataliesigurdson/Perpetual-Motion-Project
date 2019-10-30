@@ -72,7 +72,7 @@ cyprus.open_spi()
 sm = ScreenManager()
 ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
                steps_per_unit=25, speed=INIT_RAMP_SPEED)
-ramp.go_until_press(0, 10000)
+ramp.go_until_press(0, 20000)
 ramp.set_as_home()
 
 cyprus.initialize()
@@ -171,10 +171,10 @@ class MainScreen(Screen):
             print("GPIO on port P7 is LOW")
             print(" ramp moving")
 
-            ramp.start_relative_move(-226)
+            ramp.start_relative_move(-228)
             #print("at top")
             self.turnOnStaircase()
-            ramp.relative_move(226)
+            ramp.relative_move(228)
 
             print("at home")
 
@@ -192,10 +192,12 @@ class MainScreen(Screen):
             print(" ramp moving")
 
             ramp.start_relative_move(-226)
+
             # print("at top")
 
             while True:
                 if ((cyprus.read_gpio() & 0b0001) == 0):
+                    ramp.stop()
                     print("GPIO on port P6 is LOW")
                     cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
                     print("staircase moving")
