@@ -161,8 +161,8 @@ class MainScreen(Screen):
             HOME = False
             #TOP = True
         else:
-            ramp.start_relative_move(228)
-            #ramp.goHome()
+            #ramp.start_relative_move(228)
+            ramp.goHome()
             print("at home")
 
     def auto(self):
