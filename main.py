@@ -46,7 +46,7 @@ CLOSE = True
 YELLOW = .180, 0.188, 0.980, 1
 BLUE = 0.917, 0.796, 0.380, 1
 DEBOUNCE = 0.1
-INIT_RAMP_SPEED = 30
+INIT_RAMP_SPEED = 40
 RAMP_LENGTH = 725
 STAIRCASE_SPEED = 50000
 
@@ -150,19 +150,26 @@ class MainScreen(Screen):
     def toggleRamp(self):
         print("Move ramp up and down here")
         self.moveRamp()
+    def isBallAtBottomOfRamp(self):
+    #this function is on the exercise thing but do we need it?
+
+        ramp.set_as_home()
+
+    #def isBallAtTopOfRamp(self):
+
     def moveRamp(self):
         global HOME
         #global TOP
-        if HOME:
-            print(" ramp moving")
-            ramp.start_relative_move(-228)
-            print("at top")
 
-            HOME = False
-            #TOP = True
-        else:
-            #ramp.start_relative_move(228)
-            ramp.goHome()
+        if ((cyprus.read_gpio() & 0b0010)==0):
+            print("GPIO on port P7 is LOW")
+            print(" ramp moving")
+            ramp.relative_move(-226)
+            #print("at top")
+
+        if ((cyprus.read_gpio() & 0b0001)==0):
+            print("GPIO on port P6 is LOW")
+            ramp.relative_move(226)
             print("at home")
 
     def auto(self):
