@@ -139,11 +139,35 @@ class MainScreen(Screen):
         global STAIRCASE_SPEED
 
         if OFF:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=STAIRCASE_SPEED,
+                                  compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            print("staircase moving")
+            OFF = False
+        else:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            print("staircase stopped")
+            # self.staircase.text = "Staircase Off"
+            OFF = True
+
+    def toggleRamp(self):
+        print("Move ramp up and down here")
+        self.moveRamp()
+    #def isBallAtBottomOfRamp(self):
+    #this function is on the exercise thing but do we need it?
+
+    #    ramp.set_as_home()
+
+    def isBallAtTopOfRamp(self):
+        global OFF
+        global STAIRCASE_SPEED
+
+        if OFF:
             while True:
                 if ((cyprus.read_gpio() & 0b0001) == 0):
                     print("GPIO on port P6 is LOW")
                     print(" ramp moving")
-                    cyprus.set_pwm_values(1, period_value=100000, compare_value=STAIRCASE_SPEED, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+                    cyprus.set_pwm_values(1, period_value=100000, compare_value=STAIRCASE_SPEED,
+                                          compare_mode=cyprus.LESS_THAN_OR_EQUAL)
                     print("staircase moving")
                     time.sleep(5)
                     OFF = False
@@ -153,65 +177,90 @@ class MainScreen(Screen):
             print("staircase stopped")
             # self.staircase.text = "Staircase Off"
             OFF = True
-    def toggleRamp(self):
-        print("Move ramp up and down here")
-        self.moveRamp()
-    def isBallAtBottomOfRamp(self):
-    #this function is on the exercise thing but do we need it?
-
-        ramp.set_as_home()
-
-    #def isBallAtTopOfRamp(self):
 
     def moveRamp(self):
+
+        #cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+        #cyprus.set_servo_position(2, 0)
         global HOME
         #global TOP
 
-        if ((cyprus.read_gpio() & 0b0010)==0):
-            print("GPIO on port P7 is LOW")
-            print(" ramp moving")
+        #if ((cyprus.read_gpio() & 0b0010)==0):
+         #   print("GPIO on port P7 is LOW")
+         #   print(" ramp moving")
 
-            ramp.start_relative_move(-228)
+          #  ramp.start_relative_move(-228)
             #print("at top")
-            self.turnOnStaircase()
-            ramp.relative_move(228)
+          #  self.isBallAtTopOfRamp()
 
+           # ramp.set_speed(40)
+          #  ramp.relative_move(228)
+          #  print("at home")
+          #  ramp.stop()
+        ramp.get_position_in_units()
+        global INIT_RAMP_SPEED
+
+        # global TOP
+        if HOME:
+            ramp.get_position_in_units()
+            ramp.set_as_home()
+            print(" ramp moving")
+            ramp.start_relative_move(-228)
+            print("at top")
+            self.isBallAtTopOfRamp()
+            ramp.set_speed(INIT_RAMP_SPEED)
+            ramp.relative_move(228)
             print("at home")
+            ramp.stop()
+
+            HOME = False
+            # TOP = True
+        else:
+            ramp.go_until_press(1, 1)
+            # ramp.goHome()
+            print("at home")
+
+
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
-        #self.toggleRamp()
-        #self.toggleStaircase()
-        #self.toggleGate()
         global HOME
         # global TOP
-        ramp.set_speed(40)
-        if ((cyprus.read_gpio() & 0b0010) == 0):
+        ramp.goHome()
+        sleep(5)
+        cyprus.set_servo_position(2, 0.5)
+        sleep(0.5)
+        cyprus.set_servo_position(2, 0)
 
-            print("GPIO on port P7 is LOW")
-            print(" ramp moving")
+        while True:
 
-            ramp.start_relative_move(-226)
+            if ((cyprus.read_gpio() & 0b0010) == 0):
+                cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+                ramp.set_speed(40)
 
-            # print("at top")
+                print("GPIO on port P7 is LOW")
 
-            while True:
-                if ((cyprus.read_gpio() & 0b0001) == 0):
-                    ramp.stop()
-                    print("GPIO on port P6 is LOW")
-                    cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
-                    print("staircase moving")
+                ramp.start_relative_move(-226)
+                print(" ramp moving")
+                while True:
+                    if ((cyprus.read_gpio() & 0b0001) == 0):
+                        ramp.stop()
+                        print("GPIO on port P6 is LOW")
+                        cyprus.set_pwm_values(1, period_value=100000, compare_value=50000, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+                        print("staircase moving")
 
-                    break
+                        break
 
-            ramp.start_relative_move(226)
-            print("going home")
-            time.sleep(8)
-            print("turning ramp off")
-            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+                ramp.start_relative_move(226)
+                print("going home")
+                time.sleep(8)
+                print("turning ramp off")
+                cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
 
-            cyprus.set_servo_position(2, 0.5)
-
+                cyprus.set_servo_position(2, 0.5)
+                sleep(0.5)
+                cyprus.set_servo_position(2, 0)
+                break
 
     def setRampSpeed(self, speed):
 
