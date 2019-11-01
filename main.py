@@ -197,28 +197,35 @@ class MainScreen(Screen):
           #  ramp.relative_move(228)
           #  print("at home")
           #  ramp.stop()
-        ramp.get_position_in_units()
+        #ramp.get_position_in_units()
         global INIT_RAMP_SPEED
-
+        #ramp.go_until_press(1, 1)
+        #ramp.set_as_home()
         # global TOP
-        if HOME:
-            ramp.get_position_in_units()
-            ramp.set_as_home()
-            print(" ramp moving")
-            ramp.start_relative_move(-228)
-            print("at top")
-            self.isBallAtTopOfRamp()
-            ramp.set_speed(INIT_RAMP_SPEED)
-            ramp.relative_move(228)
-            print("at home")
-            ramp.stop()
+        while True:
+            #ramp.goHome()
+            #ramp.softStop()
+            if HOME:
+                #ramp.get_position_in_units()
+                ramp.set_as_home()
+                print(" ramp moving")
+                ramp.start_relative_move(-226)
+                print("at top")
+                self.isBallAtTopOfRamp()
+                ramp.set_speed(INIT_RAMP_SPEED)
+                #ramp.goHome()
+                ramp.start_relative_move(226)
+                print("at home")
+                #ramp.stop()
 
-            HOME = False
-            # TOP = True
-        else:
-            ramp.go_until_press(1, 1)
+                HOME = False
+                break
+                # TOP = True
+            #else:
+               # ramp.go_until_press(1, 1)
             # ramp.goHome()
-            print("at home")
+               # print("at home")
+               # break
 
 
 
@@ -251,7 +258,8 @@ class MainScreen(Screen):
 
                         break
 
-                ramp.start_relative_move(226)
+                #ramp.start_relative_move(226)
+                ramp.goHome()
                 print("going home")
                 time.sleep(8)
                 print("turning ramp off")
