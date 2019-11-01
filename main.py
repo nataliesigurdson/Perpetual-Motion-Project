@@ -218,14 +218,15 @@ class MainScreen(Screen):
                 print("at home")
                 #ramp.stop()
 
-                HOME = False
+                #HOME = False
                 break
                 # TOP = True
-            #else:
-               # ramp.go_until_press(1, 1)
+            else:
+                ramp.go_until_press(1, 1)
             # ramp.goHome()
-               # print("at home")
-               # break
+                print(" now at home")
+                HOME = True
+                break
 
 
 
